@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Peter's Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Times New Roman', serif; background: linear-gradient(135deg, #1a0000, #2d0000); color: white; min-height: 100vh; }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(90deg, #8b0000, #cc0000);
+            padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 3px solid #ff0044;
+            box-shadow: 0 4px 20px rgba(255,0,68,0.4);
+        }
+        .header h1 { color: #ffd700; font-size: 26px; }
+        .header p { color: #ffcccc; font-size: 14px; margin-top: 3px; }
+        .back-btn {
+            background: rgba(0,0,0,0.3); color: #ffd700;
+            border: 2px solid #ffd700; padding: 10px 20px;
+            border-radius: 20px; text-decoration: none;
+            font-size: 14px; transition: all 0.3s;
+        }
+        .back-btn:hover { background: #ffd700; color: #8b0000; }
+
+        /* LOGIN */
+        .login-container {
+            display: flex; justify-content: center;
+            align-items: center; min-height: 80vh; padding: 20px;
+        }
+        .login-box {
+            background: linear-gradient(135deg, rgba(139,0,0,0.6), rgba(0,0,0,0.5));
+            border: 2px solid #ff0044; border-radius: 20px;
+            padding: 40px; width: 100%; max-width: 400px;
+            box-shadow: 0 0 40px rgba(255,0,68,0.3);
+        }
+        .login-box h2 { color: #ffd700; font-size: 26px; margin-bottom: 8px; }
+        .login-box p { color: #ffcccc; font-size: 14px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { display: block; color: #ffd700; font-size: 14px; margin-bottom: 6px; }
+        .form-group input {
+            width: 100%; padding: 12px; font-size: 15px;
+            background: rgba(0,0,0,0.5); color: white;
+            border: 2px solid #ff0044; border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .form-group input:focus { outline: none; border-color: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.3); }
+        .login-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #8b0000, #ff0044);
+            color: white; border: none; border-radius: 30px;
+            font-size: 17px; font-weight: bold; cursor: pointer;
+            transition: all 0.3s; margin-top: 5px;
+        }
+        .login-btn:hover { transform: scale(1.03); box-shadow: 0 0 20px rgba(255,0,68,0.6); }
+        .error-msg { color: #ff6666; font-size: 14px; margin-top: 10px; display: none; }
+
+        /* DASHBOARD */
+        .dashboard { display: none; padding: 30px; max-width: 1200px; margin: 0 auto; }
+
+        /* WELCOME BANNER */
+        .welcome-banner {
+            background: linear-gradient(135deg, #8b0000, #cc0000, #ff0044);
+            border-radius: 15px; padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 25px rgba(255,0,68,0.4);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 15px;
+        }
+        .welcome-banner h2 { color: #ffd700; font-size: 26px; }
+        .welcome-banner p { color: white; font-size: 15px; margin-top: 5px; }
+        .logout-btn {
+            background: rgba(0,0,0,0.3); color: white;
+            border: 2px solid white; padding: 10px 20px;
+            border-radius: 20px; cursor: pointer;
+            font-size: 14px; transition: all 0.3s;
+        }
+        .logout-btn:hover { background: white; color: #8b0000; }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, rgba(139,0,0,0.5), rgba(0,0,0,0.4));
+            border: 2px solid #ff0044; border-radius: 15px;
+            padding: 25px; text-align: center;
+            box-shadow: 0 4px 15px rgba(255,0,68,0.2);
+            transition: all 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(255,0,68,0.4); border-color: #ffd700; }
+        .stat-card .icon { font-size: 40px; margin-bottom: 10px; }
+        .stat-card .number { font-size: 40px; color: #ffd700; font-weight: bold; }
+        .stat-card .label { font-size: 14px; color: #ffcccc; margin-top: 5px; }
+
+        /* TABLES */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        .table-card {
+            background: linear-gradient(135deg, rgba(139,0,0,0.3), rgba(0,0,0,0.4));
+            border: 2px solid #ff0044; border-radius: 15px;
+            overflow: hidden;
+        }
+        .table-card h3 {
+            background: linear-gradient(90deg, #8b0000, #cc0000);
+            color: #ffd700; padding: 15px 20px; font-size: 16px;
+        }
+        .table-body { padding: 15px; }
+        .table-item {
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,0,68,0.3);
+            border-radius: 10px; padding: 12px; margin-bottom: 10px;
+        }
+        .table-item:last-child { margin-bottom: 0; }
+        .table-item .item-name { color: #ffd700; font-weight: bold; font-size: 14px; }
+        .table-item .item-text { color: white; font-size: 13px; margin: 4px 0; }
+        .table-item .item-date { color: #ffcccc; font-size: 11px; }
+        .no-data { color: #ffcccc; font-size: 14px; text-align: center; padding: 20px; }
+
+        /* REFRESH */
+        .refresh-btn {
+            background: linear-gradient(135deg, #8b0000, #ff0044);
+            color: white; border: none; padding: 12px 25px;
+            border-radius: 20px; cursor: pointer; font-size: 15px;
+            margin-bottom: 25px; transition: all 0.3s;
+        }
+        .refresh-btn:hover { transform: scale(1.05); }
+
+        @media (max-width: 600px) {
+            .header { flex-direction: column; gap: 10px; text-align: center; }
+            .welcome-banner { flex-direction: column; text-align: center; }
+            .tables-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>📊 Peter's Dashboard</h1>
+            <p>Admin Control Panel</p>
+        </div>
+        <a href="http://localhost:5000" class="back-btn">🌐 View Website</a>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h2>🔐 Admin Login</h2>
+            <p>Enter your credentials to access the dashboard</p>
+            <div class="form-group">
+                <label>📧 Email</label>
+                <input type="email" id="adminEmail" placeholder="Enter your email..." />
+            </div>
+            <div class="form-group">
+                <label>🔑 Password</label>
+                <input type="password" id="adminPassword" placeholder="Enter your password..." />
+            </div>
+            <button class="login-btn" onclick="adminLogin()">💎 Login to Dashboard</button>
+            <p class="error-msg" id="loginError">❌ Wrong email or password!</p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboardContainer">
+
+        <!-- WELCOME BANNER -->
+        <div class="welcome-banner">
+            <div>
+                <h2>👋 Welcome back, <span id="adminName"></span>!</h2>
+                <p>📅 <span id="currentDateTime"></span></p>
+                <p style="margin-top:5px;">Here is your website overview 💎</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        </div>
+
+        <!-- REFRESH -->
+        <button class="refresh-btn" onclick="loadDashboard()">🔄 Refresh Dashboard</button>
+
+        <!-- STATS -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="icon">👥</div>
+                <div class="number" id="statUsers">0</div>
+                <div class="label">Registered Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">💬</div>
+                <div class="number" id="statComments">0</div>
+                <div class="label">Total Comments</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">📝</div>
+                <div class="number" id="statMessages">0</div>
+                <div class="label">Total Messages</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">❤️</div>
+                <div class="number" id="statLikes">0</div>
+                <div class="label">Total Likes</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">👁️</div>
+                <div class="number" id="statVisitors">0</div>
+                <div class="label">Total Visitors</div>
+            </div>
+        </div>
+
+        <!-- TABLES -->
+        <div class="tables-grid">
+
+            <!-- RECENT COMMENTS -->
+            <div class="table-card">
+                <h3>💬 Recent Comments</h3>
+                <div class="table-body" id="recentComments">
+                    <p class="no-data">Loading...</p>
+                </div>
+            </div>
+
+            <!-- RECENT MESSAGES -->
+            <div class="table-card">
+                <h3>📝 Recent Messages</h3>
+                <div class="table-body" id="recentMessages">
+                    <p class="no-data">Loading...</p>
+                </div>
+            </div>
+
+            <!-- RECENT VISITORS -->
+            <div class="table-card">
+                <h3>👁️ Recent Visitors</h3>
+                <div class="table-body" id="recentVisitors">
+                    <p class="no-data">Loading...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:5000/api';
+        let currentUser = null;
+
+        // DATE TIME
+        function updateDateTime() {
+            const now = new Date();
+            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            let h = now.getHours();
+            const m = String(now.getMinutes()).padStart(2,'0');
+            const s = String(now.getSeconds()).padStart(2,'0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            document.getElementById('currentDateTime').textContent =
+                `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} — ${h}:${m}:${s} ${ampm}`;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // ADMIN LOGIN
+        async function adminLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const errorMsg = document.getElementById('loginError');
+
+            if (!email || !password) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = '⚠️ Please fill in all fields!';
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentUser = data.user;
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('dashboardContainer').style.display = 'block';
+                    document.getElementById('adminName').textContent = currentUser.name;
+                    loadDashboard();
+                } else {
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = '❌ ' + data.message;
+                }
+            } catch(e) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = '❌ Cannot connect to server!';
+            }
+        }
+
+        // LOAD DASHBOARD
+        async function loadDashboard() {
+            try {
+                const res = await fetch(`${API}/dashboard`);
+                const data = await res.json();
+
+                // Stats
+                document.getElementById('statUsers').textContent = data.stats.users;
+                document.getElementById('statComments').textContent = data.stats.comments;
+                document.getElementById('statMessages').textContent = data.stats.messages;
+                document.getElementById('statLikes').textContent = data.stats.likes;
+                document.getElementById('statVisitors').textContent = data.stats.visitors;
+
+                // Recent Comments
+                const commentsEl = document.getElementById('recentComments');
+                if (data.recent_comments.length === 0) {
+                    commentsEl.innerHTML = '<p class="no-data">No comments yet 💎</p>';
+                } else {
+                    commentsEl.innerHTML = data.recent_comments.map(c => `
+                        <div class="table-item">
+                            <div class="item-name">👤 ${c.name}</div>
+                            <div class="item-text">💬 ${c.comment}</div>
+                            <div class="item-date">📅 ${c.date}</div>
+                        </div>`).join('');
+                }
+
+                // Recent Messages
+                const messagesEl = document.getElementById('recentMessages');
+                if (data.recent_messages.length === 0) {
+                    messagesEl.innerHTML = '<p class="no-data">No messages yet 💎</p>';
+                } else {
+                    messagesEl.innerHTML = data.recent_messages.map(m => `
+                        <div class="table-item">
+                            <div class="item-name">👤 ${m.name}</div>
+                            <div class="item-text">📧 ${m.email}</div>
+                            <div class="item-text">📌 ${m.subject}</div>
+                            <div class="item-text">💬 ${m.message}</div>
+                            <div class="item-date">📅 ${m.date}</div>
+                        </div>`).join('');
+                }
+
+                // Recent Visitors
+                const visitorsEl = document.getElementById('recentVisitors');
+                if (data.recent_visitors.length === 0) {
+                    visitorsEl.innerHTML = '<p class="no-data">No visitors yet 💎</p>';
+                } else {
+                    visitorsEl.innerHTML = data.recent_visitors.map(v => `
+                        <div class="table-item">
+                            <div class="item-name">👤 ${v.name}</div>
+                            <div class="item-date">📅 ${v.date}</div>
+                        </div>`).join('');
+                }
+
+            } catch(e) {
+                console.log('Error loading dashboard');
+            }
+        }
+
+        // LOGOUT
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('dashboardContainer').style.display = 'none';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        // Enter key login
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') adminLogin();
+        });
+    </script>
+
+</body>
+</html>
