@@ -1,0 +1,22 @@
+{
+    "name": "Peter's Site",
+    "short_name": "Peter's Site",
+    "description": "Peter's personal website with photos, videos and more!",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1a0000",
+    "theme_color": "#8b0000",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "LOVE.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "LOVE.jpg",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
+}
