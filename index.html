@@ -782,6 +782,33 @@
                 });
             }
         }
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(reg) {
+                        console.log('PWA registered!');
+                    });
+            });
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            var btn = document.getElementById('installBtn');
+            if (btn) btn.style.display = 'block';
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(result) {
+                    deferredPrompt = null;
+                    var btn = document.getElementById('installBtn');
+                    if (btn) btn.style.display = 'none';
+                });
+            }
+        }
         window.onscroll = function() {
             document.getElementById('scrollTopBtn').style.display = window.scrollY > 300 ? 'block' : 'none';
         };
