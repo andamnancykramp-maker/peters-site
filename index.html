@@ -18,11 +18,71 @@
         @keyframes sparkle-fade { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
         .clock-bar { background: linear-gradient(90deg, #4a0000, #8b0000); padding: 8px 20px; display: flex; justify-content: center; align-items: center; gap: 30px; font-size: 15px; color: #ffd700; border-bottom: 1px solid #ff0044; flex-wrap: wrap; }
         #liveClock { font-size: 18px; font-weight: bold; letter-spacing: 2px; }
-        nav { background: linear-gradient(90deg, #8b0000, #cc0000, #8b0000); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; box-shadow: 0 4px 20px rgba(255,0,68,0.5); border-bottom: 2px solid #ff0044; }
+        /* NAVBAR */
+        nav {
+            background: linear-gradient(90deg, #8b0000, #cc0000, #8b0000);
+            padding: 15px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 999;
+            box-shadow: 0 4px 20px rgba(255,0,68,0.5);
+            border-bottom: 2px solid #ff0044;
+        }
         nav .logo { color: #ffd700; font-size: 24px; font-weight: bold; animation: glow 2s infinite alternate; }
-        nav ul { list-style: none; display: flex; gap: 15px; flex-wrap: wrap; }
-        nav ul li a { color: white; text-decoration: none; font-size: 15px; padding: 7px 13px; border-radius: 20px; transition: all 0.3s; border: 1px solid transparent; }
+
+        /* HAMBURGER BUTTON */
+        .hamburger {
+            display: none;
+            background: none;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            font-size: 26px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .hamburger:hover { background: rgba(255,215,0,0.2); }
+
+        /* NAV MENU */
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            transition: all 0.3s;
+        }
+        nav ul li a {
+            color: white; text-decoration: none; font-size: 15px;
+            padding: 7px 13px; border-radius: 20px; transition: all 0.3s;
+            border: 1px solid transparent;
+        }
         nav ul li a:hover { background: rgba(255,0,68,0.3); border-color: #ff0044; color: #ffd700; }
+
+        /* MOBILE MENU */
+        @media (max-width: 768px) {
+            .hamburger { display: block; }
+            nav ul {
+                display: none;
+                position: absolute;
+                top: 65px;
+                left: 0; right: 0;
+                background: linear-gradient(135deg, #8b0000, #4a0000);
+                flex-direction: column;
+                padding: 20px;
+                gap: 10px;
+                border-bottom: 2px solid #ff0044;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                z-index: 998;
+            }
+            nav ul.open { display: flex; }
+            nav ul li a {
+                display: block;
+                padding: 12px 20px;
+                border-bottom: 1px solid rgba(255,0,68,0.2);
+                font-size: 17px;
+            }
+            nav ul li:last-child a { border-bottom: none; }
+        }
         .slideshow { position: relative; width: 100%; height: 600px; overflow: hidden; background: #000; }
         .slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 1s ease; }
         .slide.active { opacity: 1; }
@@ -157,16 +217,20 @@
     </div>
 
     <!-- NAVBAR -->
+   <!-- NAVBAR -->
     <nav>
         <div class="logo">💎 Peter's Site</div>
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#" onclick="openGallery()">Gallery</a></li>
-            <li><a href="#video">Video</a></li>
-            <li><a href="#social">Social</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li><a href="dashboard.html" target="_blank">📊 Dashboard</a></li>
-            <li><button id="installBtn" onclick="installApp()" style="display:none; background:linear-gradient(135deg,#ffd700,#ffaa00); color:#8b0000; border:none; padding:7px 13px; border-radius:20px; font-size:15px; font-weight:bold; cursor:pointer;">Install App</button></li>
+        <button class="hamburger" onclick="toggleMenu()" id="hamburgerBtn">
+            ☰
+        </button>
+        <ul id="navMenu">
+            <li><a href="#home" onclick="closeMenu()">Home</a></li>
+            <li><a href="#" onclick="openGallery(); closeMenu()">Gallery</a></li>
+            <li><a href="#video" onclick="closeMenu()">Video</a></li>
+            <li><a href="#social" onclick="closeMenu()">Social</a></li>
+            <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
+            <li><a href="dashboard.html" target="_blank" onclick="closeMenu()">📊 Dashboard</a></li>
+            <li><button id="installBtn" onclick="installApp()" style="display:none; background:linear-gradient(135deg,#ffd700,#ffaa00); color:#8b0000; border:none; padding:7px 13px; border-radius:20px; font-size:15px; font-weight:bold; cursor:pointer;">📱 Install App</button></li>
         </ul>
     </nav>
 
@@ -710,6 +774,27 @@
         });
 
         // GALLERY
+        // LIVE CLOCK
+        // LIVE CLOCK
+        function updateClock() {
+            const now = new Date();
+            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            let h = now.getHours();
+            const m = String(now.getMinutes()).padStart(2,'0');
+            const s = String(now.getSeconds()).padStart(2,'0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            const dateEl = document.getElementById('liveDate');
+            const clockEl = document.getElementById('liveClock');
+            if (dateEl) dateEl.textContent = days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+            if (clockEl) clockEl.textContent = h + ':' + m + ':' + s + ' ' + ampm;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
         function openGallery() { document.getElementById('galleryModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
         function closeGallery() { document.getElementById('galleryModal').classList.remove('active'); document.body.style.overflow = 'auto'; }
 
